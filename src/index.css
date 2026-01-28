@@ -1,6 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-body: 'Lora', Georgia, serif;
+  --font-serif: 'Playfair Display', Georgia, serif; /* font for serif text, used for headings */
+  --font-body: 'Lora', Georgia, serif; /* font for body text, used for body text */
+
+  --color-primary: hsl(74 72% 42%);
+  --color-background: hsl(40 33% 98%); /* main background */
+  --color-foreground: hsl(30 10% 15%); /* main text */
+  --color-muted: hsl(35 20% 94%); /* subtle elements */
+  --color-muted-foreground: hsl(30 8% 45%); /* subtle elements text */
+  --color-border: hsl(35 20% 88%); /* borders and inputs */
+  --color-success: hsl(142 76% 36%);
+  --color-success-foreground: hsl(0 0% 100%);
+  --color-warning: hsl(38 92% 50%);
+  --color-warning-foreground: hsl(0 0% 100%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+}
+
+body {
+  @apply bg-background text-foreground font-body;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-serif;
 }
