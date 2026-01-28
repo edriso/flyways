@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: 'Playfair Display', Georgia, serif; /* font for serif text, used for headings */
-  --font-body: 'Lora', Georgia, serif; /* font for body text, used for body text */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-body: 'Lora', Georgia, serif;
 
-  --color-primary: hsl(74 72% 42%);
-  --color-background: hsl(40 33% 98%); /* main background */
-  --color-foreground: hsl(30 10% 15%); /* main text */
-  --color-muted: hsl(35 20% 94%); /* subtle elements */
-  --color-muted-foreground: hsl(30 8% 45%); /* subtle elements text */
-  --color-border: hsl(35 20% 88%); /* borders and inputs */
+  --color-primary: hsl(74 72% 45%);
+  --color-background: hsl(40 33% 98%);
+  --color-foreground: hsl(30 10% 15%);
+  --color-muted: hsl(35 20% 94%);
+  --color-muted-foreground: hsl(30 8% 45%);
+  --color-border: hsl(35 20% 88%);
+  --color-card: hsl(40 30% 97%);
   --color-success: hsl(142 76% 36%);
   --color-success-foreground: hsl(0 0% 100%);
   --color-warning: hsl(38 92% 50%);
@@ -18,10 +19,20 @@
   --color-destructive-foreground: hsl(0 0% 100%);
 }
 
+html {
+  @apply h-full overflow-x-hidden;
+  -webkit-text-size-adjust: 100%; /* Prevent horizontal scroll on mobile */
+}
+
 body {
-  @apply bg-background text-foreground font-body;
+  @apply bg-background text-foreground font-body min-h-full w-full overflow-x-hidden;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+}
+
+#root {
+  @apply min-h-full w-full;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply font-serif;
+  @apply font-serif tracking-wide;
 }

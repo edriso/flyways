@@ -3,10 +3,11 @@ import {
   createRootRoute,
   createRoute,
 } from '@tanstack/react-router';
-import Home from './pages/Home';
-import NotFound from './pages/NotFound';
+import { Home, NotFound } from './pages';
+import { Layout } from './components';
 
 const rootRoute = createRootRoute({
+  component: Layout,
   notFoundComponent: NotFound,
 });
 
