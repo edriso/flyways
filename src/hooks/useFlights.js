@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '../utils/axios';
 import { useAppContext } from './useAppContext';
+import { parseDuration, formatTime } from '../utils/helpers';
 
 /**
  * Transform Amadeus API response to a cleaner format for our UI
@@ -16,22 +17,6 @@ const transformFlightData = (data, dictionaries) => {
     // Get carrier name from dictionaries
     const carrierCode = firstSegment.carrierCode;
     const airlineName = dictionaries?.carriers?.[carrierCode] || carrierCode;
-
-    // Parse duration (PT2H30M -> 2h 30m)
-    const parseDuration = (duration) => {
-      if (!duration) return '';
-      const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
-      if (!match) return duration;
-      const hours = match[1] || '0';
-      const minutes = match[2] || '0';
-      return `${hours}h ${minutes}m`;
-    };
-
-    // Format time (2024-01-15T10:30:00 -> 10:30)
-    const formatTime = (dateTime) => {
-      if (!dateTime) return '';
-      return dateTime.split('T')[1]?.substring(0, 5) || '';
-    };
 
     return {
       id: offer.id,

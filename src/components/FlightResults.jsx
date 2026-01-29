@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import FlightCard from './FlightCard';
 import { useAppContext } from '@/hooks/useAppContext';
 import { getCurrencyByCode } from '@/utils/currencies';
+import { getDurationMinutes } from '@/utils/helpers';
 
 // Filter Panel Component (extracted outside to prevent re-creation)
 const FilterPanel = ({
@@ -223,13 +224,6 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
 
     return buckets;
   }, [filteredFlights, minPrice, maxPrice]);
-
-  // Helper to parse duration string to minutes
-  const getDurationMinutes = (d) => {
-    const match = d?.match(/(\d+)h\s*(\d+)?m?/);
-    if (!match) return 0;
-    return parseInt(match[1]) * 60 + (parseInt(match[2]) || 0);
-  };
 
   // Sort flights
   const sortedFlights = useMemo(() => {
