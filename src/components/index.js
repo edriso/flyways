@@ -4,3 +4,5 @@ export { default as Logo } from './Logo';
 export { default as Footer } from './Footer';
 export { default as Layout } from './Layout';
 export { default as SearchForm } from './SearchForm';
+export { default as FlightCard } from './FlightCard';
+export { default as FlightResults } from './FlightResults';
