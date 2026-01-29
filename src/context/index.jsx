@@ -33,8 +33,32 @@ export const AppProvider = ({ children }) => {
     setHasSearched(false);
   };
 
+  // Date validation helpers
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const isPastDepartureDate = departureDate && departureDate < today;
+  const isInvalidReturnDate = tripType === 'roundtrip' && returnDate && departureDate && returnDate < departureDate;
+
   // Check if search is valid (ensure boolean)
-  const isSearchValid = Boolean(origin && destination && departureDate);
+  const isSearchValid = Boolean(
+    origin && 
+    destination && 
+    departureDate && 
+    origin !== destination &&
+    !isPastDepartureDate &&
+    !isInvalidReturnDate
+  );
+
+  // Get validation error message (if any)
+  const getValidationError = () => {
+    if (!origin) return 'Please select an origin airport';
+    if (!destination) return 'Please select a destination airport';
+    if (origin === destination) return 'Origin and destination cannot be the same';
+    if (!departureDate) return 'Please select a departure date';
+    if (isPastDepartureDate) return 'Please select a valid future date for your trip';
+    if (isInvalidReturnDate) return 'Return date must be after departure date';
+    return null;
+  };
 
   // Get search params for API call
   const getSearchParams = () => ({
@@ -71,6 +95,7 @@ export const AppProvider = ({ children }) => {
         swapLocations,
         resetSearch,
         isSearchValid,
+        getValidationError,
         getSearchParams,
         // Search state
         hasSearched,

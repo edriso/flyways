@@ -104,14 +104,41 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
 
   // Error state
   if (isError) {
+    // Parse API error for user-friendly message
+    const getErrorMessage = () => {
+      const apiError = error?.response?.data?.errors?.[0];
+      const errorDetail = apiError?.detail || '';
+      
+      // Map common API errors to user-friendly messages
+      if (errorDetail.includes('O/D overlap') || errorDetail.includes('same city')) {
+        return 'Origin and destination cannot be the same. Please select different airports.';
+      }
+      if (errorDetail.includes('past date') || errorDetail.includes('date')) {
+        return 'Please select a valid future date for your trip.';
+      }
+      if (apiError?.code === 477 || errorDetail.includes('location')) {
+        return 'Invalid airport code. Please select valid airports from the list.';
+      }
+      if (error?.response?.status === 429) {
+        return 'Too many requests. Please wait a moment and try again.';
+      }
+      if (error?.response?.status === 500) {
+        return 'The flight search service is temporarily unavailable. Please try again later.';
+      }
+      
+      return errorDetail || error?.message || 'Something went wrong. Please try again.';
+    };
+
     return (
       <div className="w-full max-w-5xl mx-auto px-4 py-12">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <AlertCircle className="w-12 h-12 text-destructive" />
-          <div>
+          <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-destructive" />
+          </div>
+          <div className="max-w-md">
             <h3 className="font-semibold text-lg">Unable to search flights</h3>
-            <p className="text-muted-foreground mt-1">
-              {error?.response?.data?.errors?.[0]?.detail || error?.message || 'Please try again later'}
+            <p className="text-muted-foreground mt-2">
+              {getErrorMessage()}
             </p>
           </div>
         </div>

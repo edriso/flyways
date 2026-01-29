@@ -21,38 +21,8 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { useAppContext } from '@/hooks/useAppContext';
-
-// Currencies supported by Amadeus API
-const currencies = [
-  { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-  { code: 'GBP', symbol: '£', name: 'British Pound' },
-  { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
-  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
-  { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
-  { code: 'CHF', symbol: 'Fr', name: 'Swiss Franc' },
-  { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
-  { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
-  { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham' },
-  { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar' },
-  { code: 'SAR', symbol: '﷼', name: 'Saudi Riyal' },
-];
-
-// Mock airport data - will be replaced with API search
-const airports = [
-  { code: 'CDG', city: 'Paris', name: 'Charles de Gaulle' },
-  { code: 'LHR', city: 'London', name: 'Heathrow' },
-  { code: 'JFK', city: 'New York', name: 'John F. Kennedy' },
-  { code: 'DXB', city: 'Dubai', name: 'Dubai International' },
-  { code: 'SIN', city: 'Singapore', name: 'Changi' },
-  { code: 'NRT', city: 'Tokyo', name: 'Narita' },
-  { code: 'LAX', city: 'Los Angeles', name: 'Los Angeles International' },
-  { code: 'FRA', city: 'Frankfurt', name: 'Frankfurt Airport' },
-  { code: 'AMS', city: 'Amsterdam', name: 'Schiphol' },
-  { code: 'MAD', city: 'Madrid', name: 'Barajas' },
-  { code: 'BCN', city: 'Barcelona', name: 'El Prat' },
-  { code: 'FCO', city: 'Rome', name: 'Fiumicino' },
-];
+import { airports } from '@/utils/airports';
+import { currencies } from '@/utils/currencies';
 
 const SearchForm = ({ onSearch }) => {
   // Get state from context
@@ -75,6 +45,17 @@ const SearchForm = ({ onSearch }) => {
     isSearchValid,
     setHasSearched,
   } = useAppContext();
+
+  // Check if origin and destination are the same
+  const isSameLocation = origin && destination && origin === destination;
+
+  // Check if departure date is in the past
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const isPastDepartureDate = departureDate && departureDate < today;
+
+  // Check if return date is before departure date
+  const isInvalidReturnDate = tripType === 'roundtrip' && returnDate && departureDate && returnDate < departureDate;
 
   // Popover open states (local UI state)
   const [originOpen, setOriginOpen] = useState(false);
@@ -161,6 +142,7 @@ const SearchForm = ({ onSearch }) => {
               open={destinationOpen}
               onOpenChange={setDestinationOpen}
               airports={airports}
+              hasError={isSameLocation}
             />
           </div>
 
@@ -171,6 +153,8 @@ const SearchForm = ({ onSearch }) => {
               date={departureDate}
               onSelect={setDepartureDate}
               disabledBefore={new Date()}
+              hasError={isPastDepartureDate}
+              errorMessage="Select a future date"
             />
           </div>
 
@@ -182,6 +166,8 @@ const SearchForm = ({ onSearch }) => {
                 date={returnDate}
                 onSelect={setReturnDate}
                 disabledBefore={departureDate || new Date()}
+                hasError={isInvalidReturnDate}
+                errorMessage="Must be after departure"
               />
             </div>
           )}
@@ -210,32 +196,40 @@ const SearchForm = ({ onSearch }) => {
 // ============================================
 
 // Airport Selection Component
-function AirportSelect({ label, placeholder, value, onChange, open, onOpenChange, airports }) {
+function AirportSelect({ label, placeholder, value, onChange, open, onOpenChange, airports, hasError }) {
   const selectedAirport = airports.find((a) => a.code === value);
 
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <button className="w-full flex items-center gap-3 p-4 rounded-xl bg-background border border-border hover:border-primary/50 transition-colors text-left">
-          <MapPin className="w-5 h-5 text-muted-foreground shrink-0" />
-          <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">{label}</p>
-            <p className={cn('font-medium truncate', !value && 'text-muted-foreground')}>
-              {selectedAirport ? `${selectedAirport.city} (${selectedAirport.code})` : placeholder}
-            </p>
-          </div>
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0" align="start">
+    <div className="relative">
+      <Popover open={open} onOpenChange={onOpenChange}>
+        <PopoverTrigger asChild>
+          <button
+            className={cn(
+              'w-full flex items-center gap-3 p-4 rounded-xl bg-background border transition-colors text-left',
+              hasError
+                ? 'border-destructive hover:border-destructive'
+                : 'border-border hover:border-primary/50'
+            )}
+          >
+            <MapPin className={cn('w-5 h-5 shrink-0', hasError ? 'text-destructive' : 'text-muted-foreground')} />
+            <div className="min-w-0">
+              <p className={cn('text-xs', hasError ? 'text-destructive' : 'text-muted-foreground')}>{label}</p>
+              <p className={cn('font-medium truncate', !value && 'text-muted-foreground')}>
+                {selectedAirport ? `${selectedAirport.city} (${selectedAirport.code})` : placeholder}
+              </p>
+            </div>
+          </button>
+        </PopoverTrigger>
+      <PopoverContent className="w-[320px] p-0" align="start">
         <Command>
-          <CommandInput placeholder="Search airports..." />
-          <CommandList>
+          <CommandInput placeholder="Search city or airport..." />
+          <CommandList className="max-h-[300px]">
             <CommandEmpty>No airport found.</CommandEmpty>
             <CommandGroup>
               {airports.map((airport) => (
                 <CommandItem
                   key={airport.code}
-                  value={`${airport.city} ${airport.code} ${airport.name}`}
+                  value={`${airport.city} ${airport.code} ${airport.name} ${airport.country}`}
                   onSelect={() => {
                     onChange(airport.code);
                     onOpenChange(false);
@@ -245,7 +239,9 @@ function AirportSelect({ label, placeholder, value, onChange, open, onOpenChange
                     <span className="font-medium">
                       {airport.city} ({airport.code})
                     </span>
-                    <span className="text-xs text-muted-foreground">{airport.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {airport.name}, {airport.country}
+                    </span>
                   </div>
                 </CommandItem>
               ))}
@@ -254,34 +250,54 @@ function AirportSelect({ label, placeholder, value, onChange, open, onOpenChange
         </Command>
       </PopoverContent>
     </Popover>
+    {hasError && (
+      <p className="absolute -bottom-5 left-0 text-xs text-destructive">
+        Must be different from origin
+      </p>
+    )}
+  </div>
   );
 }
 
 // Date Picker Component
-function DatePicker({ label, date, onSelect, disabledBefore }) {
+function DatePicker({ label, date, onSelect, disabledBefore, hasError, errorMessage }) {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button className="w-full flex items-center gap-3 p-4 rounded-xl bg-background border border-border hover:border-primary/50 transition-colors text-left">
-          <CalendarIcon className="w-5 h-5 text-muted-foreground shrink-0" />
-          <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">{label}</p>
-            <p className={cn('font-medium truncate', !date && 'text-muted-foreground')}>
-              {date ? format(date, 'MMM d') : 'Add date'}
-            </p>
-          </div>
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={onSelect}
-          disabled={(d) => d < disabledBefore}
-          initialFocus
-        />
-      </PopoverContent>
-    </Popover>
+    <div className="relative">
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className={cn(
+              'w-full flex items-center gap-3 p-4 rounded-xl bg-background border transition-colors text-left',
+              hasError
+                ? 'border-destructive hover:border-destructive'
+                : 'border-border hover:border-primary/50'
+            )}
+          >
+            <CalendarIcon className={cn('w-5 h-5 shrink-0', hasError ? 'text-destructive' : 'text-muted-foreground')} />
+            <div className="min-w-0">
+              <p className={cn('text-xs', hasError ? 'text-destructive' : 'text-muted-foreground')}>{label}</p>
+              <p className={cn('font-medium truncate', !date && 'text-muted-foreground')}>
+                {date ? format(date, 'MMM d') : 'Add date'}
+              </p>
+            </div>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={onSelect}
+            disabled={(d) => d < disabledBefore}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+      {hasError && errorMessage && (
+        <p className="absolute -bottom-5 left-0 text-xs text-destructive">
+          {errorMessage}
+        </p>
+      )}
+    </div>
   );
 }
 
