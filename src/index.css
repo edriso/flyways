@@ -1,7 +1,7 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'Lora', Georgia, serif;
 
   --color-primary: hsl(74 72% 45%);
@@ -33,10 +33,15 @@ body {
   @apply min-h-full w-full;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  @apply font-serif capitalize tracking-wide;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-display capitalize tracking-wide;
 }
 
-.font-serif {
+.font-display {
   @apply tracking-wide;
 }
