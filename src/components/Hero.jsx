@@ -1,6 +1,6 @@
 const Hero = () => {
   return (
-    <section className='text-center mb-10 md:mb-14'>
+    <section className='text-center'>
       <h1 className='text-4xl md:text-5xl lg:text-6xl font-semibold mb-4 tracking-tight'>
         Find the perfect flight
       </h1>
