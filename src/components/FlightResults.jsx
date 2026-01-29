@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { ArrowUpDown, Loader2, AlertCircle, Plane } from 'lucide-react';
+import { useState, useMemo, useCallback } from 'react';
+import { ArrowUpDown, ArrowUp, ArrowDown, Loader2, AlertCircle, Plane } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import FlightCard from './FlightCard';
 import { useAppContext } from '@/hooks/useAppContext';
@@ -7,6 +7,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 const FlightResults = ({ flights, isLoading, isError, error }) => {
   const { origin, destination, currency } = useAppContext();
   const [sortBy, setSortBy] = useState('price');
+  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' | 'desc'
   const [filters, setFilters] = useState({
     stops: [], // [0, 1, 2] for nonstop, 1 stop, 2+ stops
     priceRange: [0, 10000],
@@ -48,27 +49,47 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
     });
   }, [flights, filters]);
 
+  // Helper to parse duration string to minutes
+  const getDurationMinutes = useCallback((d) => {
+    const match = d?.match(/(\d+)h\s*(\d+)?m?/);
+    if (!match) return 0;
+    return parseInt(match[1]) * 60 + (parseInt(match[2]) || 0);
+  }, []);
+
   // Sort flights
   const sortedFlights = useMemo(() => {
-    return [...filteredFlights].sort((a, b) => {
+    const sorted = [...filteredFlights].sort((a, b) => {
+      let comparison = 0;
+      
       switch (sortBy) {
         case 'price':
-          return a.price - b.price;
-        case 'duration': {
-          const getDuration = (d) => {
-            const match = d.match(/(\d+)h\s*(\d+)?m?/);
-            if (!match) return 0;
-            return parseInt(match[1]) * 60 + (parseInt(match[2]) || 0);
-          };
-          return getDuration(a.totalDuration) - getDuration(b.totalDuration);
-        }
+          comparison = a.price - b.price;
+          break;
+        case 'duration':
+          comparison = getDurationMinutes(a.totalDuration) - getDurationMinutes(b.totalDuration);
+          break;
         case 'departure':
-          return a.outbound[0].departure.time.localeCompare(b.outbound[0].departure.time);
+          comparison = a.outbound[0].departure.time.localeCompare(b.outbound[0].departure.time);
+          break;
         default:
-          return 0;
+          comparison = 0;
       }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
     });
-  }, [filteredFlights, sortBy]);
+    
+    return sorted;
+  }, [filteredFlights, sortBy, sortOrder, getDurationMinutes]);
+
+  // Handle sort button click - toggle order if same field, otherwise set new field with asc
+  const handleSort = useCallback((field) => {
+    if (sortBy === field) {
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  }, [sortBy]);
 
   // Toggle stop filter
   const toggleStopFilter = (stop) => {
@@ -249,20 +270,29 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
                 { value: 'price', label: 'Price' },
                 { value: 'duration', label: 'Duration' },
                 { value: 'departure', label: 'Departure' },
-              ].map(({ value, label }) => (
-                <button
-                  key={value}
-                  onClick={() => setSortBy(value)}
-                  className={cn(
-                    'px-3 py-1.5 rounded-lg text-sm transition-colors',
-                    sortBy === value
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-accent hover:bg-accent/80'
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
+              ].map(({ value, label }) => {
+                const isActive = sortBy === value;
+                // Up arrow = ascending (low to high), Down arrow = descending (high to low)
+                const SortIcon = isActive ? (sortOrder === 'asc' ? ArrowDown : ArrowUp) : null;
+                
+                return (
+                  <button
+                    key={value}
+                    onClick={() => handleSort(value)}
+                    className={cn(
+                      'px-3 py-1.5 rounded-lg text-sm transition-colors flex items-center gap-1.5',
+                      isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-accent hover:bg-accent/80'
+                    )}
+                  >
+                    {label}
+                    {isActive && SortIcon && (
+                      <SortIcon className="w-3 h-3" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
