@@ -3,12 +3,12 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Loader2,
   AlertCircle,
   Plane,
   SlidersHorizontal,
   X,
 } from 'lucide-react';
+import Loader from './Loader';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -315,22 +315,7 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="w-full max-w-5xl mx-auto px-4 py-12">
-        <div className="flex flex-col items-center justify-center gap-4">
-          <div className="relative">
-            <Plane className="w-12 h-12 text-primary animate-pulse" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-primary" />
-            </div>
-          </div>
-          <div className="text-center">
-            <p className="font-medium">Searching for flights...</p>
-            <p className="text-sm text-muted-foreground mt-1">Finding the best deals for you</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   // Error state
