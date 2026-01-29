@@ -1,18 +1,15 @@
-const Logo = ({
-  containerClassName = 'size-8',
-  iconClassName = 'size-4',
-}) => {
+const Logo = ({ containerClassName = 'size-8', iconClassName = 'size-5' }) => {
   return (
-    <div className={`bg-primary flex items-center justify-center ${containerClassName}`}>
+    <div
+      className={`bg-primary flex items-center justify-center ${containerClassName}`}
+    >
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='16'
-        height='16'
-        fill='currentColor'
         viewBox='0 0 256 256'
+        fill='currentColor'
         className={iconClassName}
       >
-        <path d='m237.66 141.66-32 32a8 8 0 0 1-11.32-11.32L212.69 144h-89.38l-56 56H96a8 8 0 0 1 0 16H48a8 8 0 0 1-8-8v-48a8 8 0 0 1 16 0v28.69l56-56V43.31L93.66 61.66a8 8 0 0 1-11.32-11.32l32-32a8 8 0 0 1 11.32 0l32 32a8 8 0 0 1-11.32 11.32L128 43.31V128h84.69l-18.35-18.34a8 8 0 0 1 11.32-11.32l32 32a8 8 0 0 1 0 11.32Z' />
+        <path d='m185.33 114.21 29.14-27.42.17-.17a32 32 0 0 0-45.26-45.26c0 .06-.11.11-.17.17l-27.42 29.14-83-30.2a8 8 0 0 0-8.39 1.86l-24 24a8 8 0 0 0 1.22 12.31l63.89 42.59L76.69 136H56a8 8 0 0 0-5.65 2.34l-24 24A8 8 0 0 0 29 175.42l36.82 14.73 14.7 36.75.06.16a8 8 0 0 0 13.18 2.47l23.87-23.88A8 8 0 0 0 120 200v-20.69l14.76-14.76 42.59 63.89a8 8 0 0 0 12.31 1.22l24-24a8 8 0 0 0 1.86-8.39Zm-.07 97.23-42.59-63.88a8 8 0 0 0-5.87-3.56h-.79a8 8 0 0 0-5.66 2.35l-24 24A8 8 0 0 0 104 176v20.69l-13.07 13.07L79.43 181a8 8 0 0 0-4.43-4.43l-28.74-11.5L59.32 152H80a8 8 0 0 0 5.66-2.34l24-24a8 8 0 0 0-1.22-12.32l-63.88-42.6 13.5-13.49 83.22 30.26a8 8 0 0 0 8.56-2l30.94-32.91a16 16 0 0 1 22.62 22.63l-32.87 30.93a8 8 0 0 0-2 8.56l30.26 83.22Z' />
       </svg>
     </div>
   );
