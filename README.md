@@ -16,6 +16,7 @@ A modern flight search app built with React and the Amadeus API.
 - **Sorting** - Sort results by price, duration, or departure time
 - **Live Price Graph** - Visual price distribution that updates with filters
 - **Responsive Design** - Works great on mobile and desktop
+- **Theme Switcher** - 6 color themes (Light, Dark, Ocean, Rose, Lavender, Mint)
 
 ## Tech Stack
 
