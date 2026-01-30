@@ -310,7 +310,7 @@ function PassengerSelect({ passengers, onChange }) {
       <div className="flex items-center gap-1 ml-1">
         <button
           onClick={() => onChange(Math.max(1, passengers - 1))}
-          className="w-7 h-7 rounded-md border border-border hover:bg-accent flex items-center justify-center text-sm transition-colors"
+          className="w-7 h-7 rounded-md border border-border hover:bg-accent flex items-center justify-center text-sm transition-colors cursor-pointer"
           aria-label="Decrease passengers"
         >
           −
@@ -318,7 +318,7 @@ function PassengerSelect({ passengers, onChange }) {
         <span className="w-6 text-center font-medium text-sm">{passengers}</span>
         <button
           onClick={() => onChange(Math.min(9, passengers + 1))}
-          className="w-7 h-7 rounded-md border border-border hover:bg-accent flex items-center justify-center text-sm transition-colors"
+          className="w-7 h-7 rounded-md border border-border hover:bg-accent flex items-center justify-center text-sm transition-colors cursor-pointer"
           aria-label="Increase passengers"
         >
           +
