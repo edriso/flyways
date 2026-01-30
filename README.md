@@ -15,6 +15,7 @@ A modern flight search app built with React and the Amadeus API.
 - **Advanced Filtering** - Filter by stops, price range, and airlines
 - **Sorting** - Sort results by price, duration, or departure time
 - **Live Price Graph** - Visual price distribution that updates with filters
+- **Infinite Scroll** - Loads more flights as you scroll down
 - **Responsive Design** - Works great on mobile and desktop
 - **Theme Switcher** - 6 color themes (Light, Dark, Ocean, Rose, Lavender, Mint)
 
@@ -128,6 +129,7 @@ Uses the [Amadeus Flight Offers Search API](https://developers.amadeus.com/self-
 - **useMemo** for price graph and filter options - only recalculates when data actually changes
 - **useCallback** for filter handlers - stable references prevent unnecessary re-renders
 - **Smart token handling** - concurrent API calls share one token request instead of firing multiple
+- **Infinite scroll** - uses IntersectionObserver to load 10 flights at a time, resets when filters change
 
 ---
 

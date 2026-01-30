@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   ArrowUpDown,
   ArrowUp,
@@ -127,11 +127,15 @@ const FilterPanel = ({
   </div>
 );
 
+const FLIGHTS_PER_PAGE = 10;
+
 const FlightResults = ({ flights, isLoading, isError, error }) => {
   const { origin, destination, currency } = useAppContext();
   const [sortBy, setSortBy] = useState('price');
   const [sortOrder, setSortOrder] = useState('asc');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(FLIGHTS_PER_PAGE);
+  const loadMoreRef = useRef(null);
 
   // Get price bounds from flights
   const { minPrice, maxPrice } = useMemo(() => {
@@ -250,6 +254,42 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
     return flightsToSort;
   }, [filteredFlights, sortBy, sortOrder]);
 
+  // Visible flights (for infinite scroll)
+  const visibleFlights = useMemo(() => {
+    return sortedFlights.slice(0, visibleCount);
+  }, [sortedFlights, visibleCount]);
+
+  const hasMore = visibleCount < sortedFlights.length;
+
+  // Load more flights
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => prev + FLIGHTS_PER_PAGE);
+  }, []);
+
+  // Reset pagination
+  const resetPagination = useCallback(() => {
+    setVisibleCount(FLIGHTS_PER_PAGE);
+  }, []);
+
+  // Infinite scroll - load more when reaching bottom
+  useEffect(() => {
+    const currentRef = loadMoreRef.current;
+    if (!currentRef || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(currentRef);
+
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
+
   // Handle sort
   const handleSort = useCallback(
     (field) => {
@@ -259,8 +299,9 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
         setSortBy(field);
         setSortOrder('asc');
       }
+      resetPagination();
     },
-    [sortBy]
+    [sortBy, resetPagination]
   );
 
   // Toggle filters
@@ -271,7 +312,8 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
         ? prev.stops.filter((s) => s !== stop)
         : [...prev.stops, stop],
     }));
-  }, []);
+    resetPagination();
+  }, [resetPagination]);
 
   const toggleAirlineFilter = useCallback((airline) => {
     setFilters((prev) => ({
@@ -280,15 +322,18 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
         ? prev.airlines.filter((a) => a !== airline)
         : [...prev.airlines, airline],
     }));
-  }, []);
+    resetPagination();
+  }, [resetPagination]);
 
   const handlePriceRangeChange = useCallback((value) => {
     setFilters((prev) => ({ ...prev, priceRange: value }));
-  }, []);
+    resetPagination();
+  }, [resetPagination]);
 
   const clearAllFilters = useCallback(() => {
     setFilters({ stops: [], priceRange: [minPrice, maxPrice], airlines: [] });
-  }, [minPrice, maxPrice]);
+    resetPagination();
+  }, [minPrice, maxPrice, resetPagination]);
 
   const hasActiveFilters =
     filters.stops.length > 0 ||
@@ -523,10 +568,29 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
 
           {/* Flight Cards */}
           <div className="space-y-4">
-            {sortedFlights.length > 0 ? (
-              sortedFlights.map((flight) => (
-                <FlightCard key={flight.id} flight={flight} currency={currency} />
-              ))
+            {visibleFlights.length > 0 ? (
+              <>
+                {visibleFlights.map((flight) => (
+                  <FlightCard key={flight.id} flight={flight} currency={currency} />
+                ))}
+                
+                {/* Load more trigger */}
+                {hasMore && (
+                  <div
+                    ref={loadMoreRef}
+                    className="flex items-center justify-center py-4 text-sm text-muted-foreground"
+                  >
+                    Loading more flights...
+                  </div>
+                )}
+                
+                {/* Show count */}
+                {!hasMore && sortedFlights.length > FLIGHTS_PER_PAGE && (
+                  <p className="text-center text-sm text-muted-foreground py-2">
+                    Showing all {sortedFlights.length} flights
+                  </p>
+                )}
+              </>
             ) : (
               <div className="text-center py-12 bg-card rounded-xl border border-border">
                 <Plane className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
