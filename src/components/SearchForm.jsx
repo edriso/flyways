@@ -306,7 +306,7 @@ function PassengerSelect({ passengers, onChange }) {
   return (
     <div className="flex items-center gap-2">
       <Users className="w-4 h-4 text-muted-foreground" />
-      <span className="text-sm text-muted-foreground">Travelers</span>
+      <span className="hidden md:inline text-sm text-muted-foreground">Travelers</span>
       <div className="flex items-center gap-1 ml-1">
         <button
           onClick={() => onChange(Math.max(1, passengers - 1))}
