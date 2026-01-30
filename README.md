@@ -110,6 +110,8 @@ src/
 
 Uses the [Amadeus Flight Offers Search API](https://developers.amadeus.com/self-service/category/flights/api-doc/flight-offers-search) for real flight data. OAuth2 authentication is handled automatically by axios interceptors.
 
+**Airport Search**: Uses Amadeus Location API for autocomplete. Static list shows popular airports initially, then API kicks in when you type 2+ characters.
+
 **Note**: The test environment has rate limits. If you see 429 errors, wait a moment before retrying.
 
 ---
@@ -130,6 +132,7 @@ Uses the [Amadeus Flight Offers Search API](https://developers.amadeus.com/self-
 - **useCallback** for filter handlers - stable references prevent unnecessary re-renders
 - **Smart token handling** - concurrent API calls share one token request instead of firing multiple
 - **Infinite scroll** - uses IntersectionObserver to load 10 flights at a time, resets when filters change
+- **Currency persistence** - saves your preferred currency to localStorage
 
 ---
 

@@ -1,5 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppContext } from './AppContext';
+
+// Get saved currency from localStorage or default to USD
+const getSavedCurrency = () => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('flyways_currency') || 'USD';
+  }
+  return 'USD';
+};
 
 export const AppProvider = ({ children }) => {
   // Search form state
@@ -9,7 +17,12 @@ export const AppProvider = ({ children }) => {
   const [returnDate, setReturnDate] = useState(null);
   const [passengers, setPassengers] = useState(1);
   const [tripType, setTripType] = useState('roundtrip'); // 'roundtrip' | 'oneway'
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState(getSavedCurrency);
+
+  // Save currency to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('flyways_currency', currency);
+  }, [currency]);
 
   // Search results state
   const [hasSearched, setHasSearched] = useState(false);
