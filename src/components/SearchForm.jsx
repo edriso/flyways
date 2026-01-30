@@ -24,7 +24,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { airports } from '@/utils/airports';
 import { currencies } from '@/utils/currencies';
 
-const SearchForm = ({ onSearch }) => {
+const SearchForm = ({ onSearch, isSearching = false }) => {
   // Get state from context
   const {
     origin,
@@ -180,10 +180,10 @@ const SearchForm = ({ onSearch }) => {
             onClick={handleSearch}
             size="lg"
             className="px-8"
-            disabled={!isSearchValid}
+            disabled={!isSearchValid || isSearching}
           >
             <Search className="w-4 h-4 mr-2" />
-            Search flights
+            {isSearching ? 'Searching...' : 'Search flights'}
           </Button>
         </div>
       </div>

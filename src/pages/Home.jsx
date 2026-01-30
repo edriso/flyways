@@ -10,7 +10,7 @@ const Home = () => {
     <>
       <Hero />
       <div className="px-4 -mt-8 relative z-10">
-        <SearchForm />
+        <SearchForm isSearching={isLoading || isFetching} />
       </div>
 
       {/* Show results only after user has searched */}
