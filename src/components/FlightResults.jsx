@@ -440,7 +440,7 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
         <div className="bg-card rounded-xl p-4 md:p-6 border border-border/50 mb-6">
           <h3 className="text-sm font-medium mb-4">Price Distribution</h3>
           <div className="h-32 md:h-40">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <AreaChart data={priceGraphData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <defs>
                   <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
