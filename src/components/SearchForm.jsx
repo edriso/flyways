@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon, MapPin, Users, ArrowRightLeft, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -198,6 +198,14 @@ const SearchForm = ({ onSearch, isSearching = false }) => {
 // Airport Selection Component
 function AirportSelect({ label, placeholder, value, onChange, open, onOpenChange, airports, hasError }) {
   const selectedAirport = airports.find((a) => a.code === value);
+  const listRef = useRef(null);
+
+  // Scroll to top when search input changes
+  const handleSearchChange = useCallback(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = 0;
+    }
+  }, []);
 
   return (
     <div className="relative">
@@ -222,8 +230,8 @@ function AirportSelect({ label, placeholder, value, onChange, open, onOpenChange
         </PopoverTrigger>
       <PopoverContent className="w-[320px] p-0" align="start">
         <Command>
-          <CommandInput placeholder="Search city or airport..." />
-          <CommandList className="max-h-[300px]">
+          <CommandInput placeholder="Search city or airport..." onValueChange={handleSearchChange} />
+          <CommandList ref={listRef} className="max-h-[300px]">
             <CommandEmpty>No airport found.</CommandEmpty>
             <CommandGroup>
               {airports.map((airport) => (
