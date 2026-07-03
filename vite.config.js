@@ -7,6 +7,7 @@ const __dirname = path.resolve()
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/flyways/',
   plugins: [
     react(),
     tailwindcss(),
