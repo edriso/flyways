@@ -4,7 +4,7 @@ A modern flight search app built with React and the Amadeus API.
 
 ## Live Demo
 
-🔗 [View Live Demo](https://flyways-spotter.netlify.app)
+🔗 [View Live Demo](https://edriso.github.io/flyways/)
 
 ## Features
 
