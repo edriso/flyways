@@ -234,7 +234,7 @@ const FlightResults = ({ flights, isLoading, isError, error }) => {
     const flightsToSort = [...filteredFlights];
     
     flightsToSort.sort((a, b) => {
-      let comparison = 0;
+      let comparison;
       switch (sortBy) {
         case 'price':
           comparison = a.price - b.price;
